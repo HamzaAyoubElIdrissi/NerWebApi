@@ -1,6 +1,8 @@
 import spacy
 import pandas as pd
 from spacy import displacy
+import wikipediaapi
+from transformers import pipeline
 
 
 sm_nlp = spacy.load("en_core_web_sm")
@@ -56,3 +58,16 @@ def extract_entities(text):
         "ORG": [org_list]
     })
     return df
+
+
+def get_entity_description(entity_name):
+    wiki_wiki = wikipediaapi.Wikipedia('en')
+    page = wiki_wiki.page(entity_name)
+    description = page.summary
+    return description
+
+
+def summarize_text(text):
+    summarizer = pipeline("summarization")
+    summary = summarizer(text, max_length=1000, min_length=30, do_sample=False)
+    return summary[0]["summary_text"]
